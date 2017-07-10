@@ -21,14 +21,15 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "babel-runtime": "^6.23.0",
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2"
+    "gulp-babel": "^6.1.2",
+    "gulp-sourcemaps": "^2.6.0"
   },
   "dependencies": {
-    "babel-runtime": "^6.23.0",
+    "axios": "^0.16.2",
     "cheerio": "^1.0.0-rc.2",
     "eventproxy": "^1.0.0",
-    "gulp-sourcemaps": "^2.6.0",
     "superagent": "^3.5.2",
     "url": "^0.11.0"
   }
