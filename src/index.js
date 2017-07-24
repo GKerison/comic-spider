@@ -42,7 +42,13 @@ class App {
             console.log(`${title} - ${this.ACApi.checkLink(href)}`)
         });
     }
+    
+
+    downloadImages(){
+        this.ACApi.getComicImages(`http://ac.qq.com/ComicView/index/id/545388/cid/94`);
+    }
 }
 
-let app = new App();
-app.start();
+let app = new App();  
+// app.start();
+app.downloadImages();

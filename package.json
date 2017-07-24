@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel -w src -d build --source-maps",
     "start": "node build/index.js",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "phantomjs": "node_modules/.bin/phantomjs build/index.js",
+    "kk": "node build/main.js"
   },
   "keywords": [
     "comic",
@@ -24,11 +26,14 @@
     "babel-runtime": "^6.23.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "gulp-sourcemaps": "^2.6.0"
+    "gulp-notify": "^3.0.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "phantomjs-prebuilt": "^2.1.14"
   },
   "dependencies": {
     "axios": "^0.16.2",
     "cheerio": "^1.0.0-rc.2",
+    "del": "^3.0.0",
     "eventproxy": "^1.0.0",
     "superagent": "^3.5.2",
     "url": "^0.11.0"

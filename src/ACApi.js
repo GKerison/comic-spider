@@ -1,4 +1,6 @@
 import axios from 'axios';
+// import phantom from 'phantom';
+import webpage from 'webpage';
 import url from 'url';
 
 const BASE_URL = 'http://ac.qq.com';
@@ -27,5 +29,24 @@ export default class ACApi {
             .get(api);
     }
 
-    getComicImages() {}
+    async getComicImages(link) {
+        // const instance = await phantom.create(); const page = await
+        // instance.createPage(); await page.on("onResourceRequested", function
+        // (requestData) {     console.info('Requesting', requestData.url) }); const
+        // status = await page.open(link); console.log(status); const content = await
+        // page.property('content'); console.log(content); await instance.exit();
+
+        var page = webpage.create();
+        page.open(link, function (status) {
+            var data;
+            if (status === 'fail') {
+                console.log('open page fail!');
+            } else {
+                console.log(page.content); //打印出HTML内容
+            }
+            page.close(); //关闭网页
+            phantom.exit(); //退出phantomjs命令行
+        });
+
+    }
 }

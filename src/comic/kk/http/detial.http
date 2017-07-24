@@ -1,0 +1,3 @@
+
+//获取某一漫画章节
+GET http://www.kuaikanmanhua.com/web/comic/16411/
