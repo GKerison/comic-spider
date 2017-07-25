@@ -1,6 +1,8 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import http from 'http';
+import request from 'superagent';
+import fetch from 'node-fetch';
 import { SERVER, URLS } from './Config';
 
 const URL = 'http://www.kuaikanmanhua.com/web/comic/16411/'
@@ -18,33 +20,48 @@ export default class Client {
     }
 
     open(url) {
-        http.get(url, (res) => {
-            const { statusCode } = res;
-            const contentType = res.headers['content-type'];
-            let error;
-            if (statusCode !== 200) {
-                error = new Error('Request Failed.\n' +
-                    `Status Code: ${statusCode}`);
-            }
-            if (error) {
-                console.error(error.message);
-                // consume response data to free up memory
-                res.resume();
-                return;
-            }
-            res.setEncoding('utf8');
-            let html = '';
-            res.on('data', (chunk) => { html += chunk; });
-            res.on('end', () => {
-                try {
-                    // console.log(html);
-                    this.parse(html)
-                } catch (e) {
-                    console.error(e.message);
-                }
-            });
-        }).on('error', (e) => {
-            console.error(`Got error: ${e.message}`);
+        // http.get(url, (res) => {
+        //     const { statusCode } = res;
+        //     const contentType = res.headers['content-type'];
+        //     let error;
+        //     if (statusCode !== 200) {
+        //         error = new Error('Request Failed.\n' +
+        //             `Status Code: ${statusCode}`);
+        //     }
+        //     if (error) {
+        //         console.error(error.message);
+        //         // consume response data to free up memory
+        //         res.resume();
+        //         return;
+        //     }
+        //     res.setEncoding('utf8');
+        //     let html = '';
+        //     res.on('data', (chunk) => { html += chunk; });
+        //     res.on('end', () => {
+        //         try {
+        //             // console.log(html);
+        //             this.parse(html)
+        //         } catch (e) {
+        //             console.error(e.message);
+        //         }
+        //     });
+        // }).on('error', (e) => {
+        //     console.error(`Got error: ${e.message}`);
+        // });
+
+        // request.get(url).end((err,res)=>{
+        //     if(err){
+        //         console.log(err);
+        //         return;
+        //     }
+        //     this.parse(res.text);
+        // })
+
+        fetch(url).then(res => res.text())
+        .then(html=>{
+            this.parse(html);
+        }).catch(err => {
+            console.log(err);
         });
     }
 
