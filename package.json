@@ -36,6 +36,7 @@
     "del": "^3.0.0",
     "eventproxy": "^1.0.0",
     "node-fetch": "^1.7.1",
+    "phantom": "^4.0.5",
     "superagent": "^3.5.2",
     "url": "^0.11.0"
   }

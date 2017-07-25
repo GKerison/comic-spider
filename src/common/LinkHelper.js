@@ -1,14 +1,18 @@
 import url from 'url';
-export default class LinkHelper {
+
+class LinkHelper {
 
     check(link) {
         return /^http.*/.test(link)
     }
 
     complete(base, link) {
-        if (check(link)) {
+        if (this.check(link)) {
             return link;
         }
-        return url.resolve(BASE_URL, link);
+        return url.resolve(base, link);
     }
 }
+
+const helper = new LinkHelper();
+export default helper;

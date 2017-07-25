@@ -12,7 +12,7 @@ const config = {
 }
 
 const nofity_config = {
-    title:'任务通知',
+    title: '任务通知',
     onLast: true,
     message: "编译完成 @ <%= options.date %>",
     templateOptions: {
@@ -29,10 +29,10 @@ gulp.task('babel', () => {
         .pipe(notify(nofity_config));
 })
 
-gulp.task('clean',function(cb){
-    del([config.dest],cb);
+gulp.task('clean', function (cb) {
+    del([config.dest], cb);
 });
 
 gulp.task('default', function () {
-    gulp.watch(['src/**/*.js'],['clean','babel'])
+    gulp.watch(['src/**/*.js'], ['clean', 'babel'])
 });

@@ -1,18 +1,23 @@
-import axios from 'axios';
+// import axios from 'axios';
 import cheerio from 'cheerio';
-import http from 'http';
-import request from 'superagent';
+// import http from 'http';
 import fetch from 'node-fetch';
-import { SERVER, URLS } from './Config';
+import path from 'path';
+import fs from 'fs';
+import {
+    SERVER,
+    URLS
+} from './Config';
+import LinkHelper from '../../../common/LinkHelper';
+
+import phantom from 'phantom';
 
 const URL = 'http://www.kuaikanmanhua.com/web/comic/16411/'
 // const DOUBAN_URL = 'http://huaban.com/'
 
 export default class Client {
 
-    constructor() {
-        // this.http = axios.create({ baseURL: SERVER, responseType: 'text', timeout: 15000, headers: {} });
-    }
+    constructor() {}
 
     start(url = URL) {
         console.log(`开始快看漫画加载...`)
@@ -20,56 +25,17 @@ export default class Client {
     }
 
     open(url) {
-        // http.get(url, (res) => {
-        //     const { statusCode } = res;
-        //     const contentType = res.headers['content-type'];
-        //     let error;
-        //     if (statusCode !== 200) {
-        //         error = new Error('Request Failed.\n' +
-        //             `Status Code: ${statusCode}`);
-        //     }
-        //     if (error) {
-        //         console.error(error.message);
-        //         // consume response data to free up memory
-        //         res.resume();
-        //         return;
-        //     }
-        //     res.setEncoding('utf8');
-        //     let html = '';
-        //     res.on('data', (chunk) => { html += chunk; });
-        //     res.on('end', () => {
-        //         try {
-        //             // console.log(html);
-        //             this.parse(html)
-        //         } catch (e) {
-        //             console.error(e.message);
-        //         }
-        //     });
-        // }).on('error', (e) => {
-        //     console.error(`Got error: ${e.message}`);
-        // });
-
-        // request.get(url).end((err,res)=>{
-        //     if(err){
-        //         console.log(err);
-        //         return;
-        //     }
-        //     this.parse(res.text);
-        // })
-
-        fetch(url).then(res => res.text())
-        .then(html=>{
-            this.parse(html);
-        }).catch(err => {
-            console.log(err);
-        });
+        // fgit
+        //     .then(res => res.text())
+        //     .then(html => this.parse(html))
+        //     .catch(console.log);
+        this.parseContent(url);
     }
 
     parse(html) {
         console.log(`开始快看漫画解析...`)
         // console.log(html)
-        console.log(this.parseChapters(html));
-        this.parseContent(html);
+        // console.log(this.parseChapters(html));
     }
 
     /**
@@ -83,7 +49,7 @@ export default class Client {
             let link = $(item);
             return {
                 title: link.attr('title'),
-                link: link.attr('href'),
+                link: LinkHelper.complete(SERVER, link.attr('href')),
             };
         }).toArray();
         return chapters;
@@ -93,7 +59,62 @@ export default class Client {
      * 解析正文
      * @param {*页面内容} html 
      */
-    parseContent(html) {
+    async parseContent(url) {
         console.log(`解析内容...`);
+        const instance = await phantom.create(['--ignore-ssl-errors=yes', '--load-images=yes'], {
+            logLevel: 'error',
+        });
+        const page = await instance.createPage();
+        // await page.on("onResourceRequested", function (requestData) {
+        //     console.info('Requesting', requestData.url)
+        // });
+        await page.setting('javascriptEnabled');
+        const status = await page.open(url);
+        // console.log(status);
+        const content = await page.property('content');
+        // console.log(content);
+
+        const $ = cheerio.load(content);
+        let images = $('.comic-imgs img').map((index, item) => {
+            let img = $(item);
+            // console.log(img.data('kksrc'));
+            return {
+                index: index,
+                title: img.attr('title'),
+                src: img.data('kksrc'),
+                h: img.attr('h'),
+            };
+        });
+
+        // let title = page.evaluate(() => {
+        //     window.scroll(0, window.innerHeight)
+        //     return window.title;
+        // });
+        // console.log('Page title is ' + title);
+        // page.render('./snapshot/test.png');
+
+        // page.evaluate(function () {
+        //     return document.querySelector('.comic-imgs').innerHTML;
+        // }).then(function (html) {
+        //     console.log(`_________________________________________________`);
+        //     console.log(html);
+        //     console.log(`_________________________________________________`);
+        // });
+        await instance.exit();
+        // this.saveImages(images);
+    }
+
+    saveImages(images) {
+        images && images.each((index, item) => {
+            console.log(item)
+            fetch(item.src)
+                .then((res) => {
+                    let fileName = `${item.title}_${item.index}.jpg`;
+                    let filePath = path.resolve(__dirname, fileName);
+                    console.log(`save file to  ---> ${filePath}`);
+                    let dest = fs.createWriteStream(filePath);
+                    res.body.pipe(dest);
+                }).catch(err => console.error);
+        });
     }
 }
